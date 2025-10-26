@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # Natours Application Service
+  app:
+    container_name: natours-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    env_file: .env
+    depends_on:
+      - natours-db
+      - natours-redis
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run start:dev
+  
+  #postgres database service
+  natours-db:
+    image: postgres:16
+    container_name: natours-db
+    restart: always
+    env_file: .env
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  #redis service
+  natours-redis:
+    image: redis:7
+    container_name: natours-redis
+    restart: always
+    ports:
+      - '6379:6379'
+
+volumes:
+  pgdata:
